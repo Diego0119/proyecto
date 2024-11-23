@@ -12,4 +12,21 @@ function createPost($title, $content, $author_id)
     $query = ""; // me deben pasar el query los de base de datos
     return mysqli_query($conexion, $query);
 }
+
+function getAllPosts()
+{
+}
+
+function getPostById()
+{
+}
+
+function updatePost()
+{
+}
+
+
+function deletePost()
+{
+}
 ?>
