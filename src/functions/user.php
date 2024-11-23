@@ -1,5 +1,5 @@
 <?php
-include('database.php');
+include('database.php'); // archivo de base de datos
 
 function registerUser($username, $email, $password)
 {
