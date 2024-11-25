@@ -28,11 +28,13 @@ function getPostById($author_id)
 
     $author_id = (int) $author_id; // se castea para que si o si sea un int
     $query = ""; // aca los de base de datos me deben pasar el query y yo coloco el id del usuario
-
+    return mysqli_query($conexion, $query); // aca se devuelve la data
 }
 
-function updatePost()
+function updatePost($title, $content)
 {
+    global $conexion;
+
 }
 
 function deletePost()
