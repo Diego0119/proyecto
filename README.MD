@@ -1,6 +1,6 @@
 ### TFT Project 🧐
 ---
-## Este proyecto implementar un blog del juego TFT 👾
+## Este proyecto implementa un blog del juego TFT 👾
 
 ## Funcionalidades ⚒️ ⚙️
 
