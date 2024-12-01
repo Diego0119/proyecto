@@ -91,17 +91,41 @@ function getAllComps()
 
 function getAllChampions()
 {
+    global $conexion;
 
+    $query = "SELECT * FROM champions"; // consulta
+    $result = mysqli_query($conexion, $query);
 
+    if (!$result) {
+        return "Error al obtener los campeones: " . mysqli_error($conexion);
+    }
+
+    $champions = [];
+    while ($row = mysqli_fetch_assoc($result)) {
+        $champions[] = $row;
+    }
+
+    return $champions;
 }
 
 function getAllItems()
 {
+    global $conexion;
 
+    $query = "SELECT * FROM items"; // consulta
+    $result = mysqli_query($conexion, $query);
 
+    if (!$result) {
+        return "Error al obtener los ítems: " . mysqli_error($conexion);
+    }
+
+    $items = [];
+    while ($row = mysqli_fetch_assoc($result)) {
+        $items[] = $row;
+    }
+
+    return $items;
 }
-
-
 
 
 ?>
