@@ -71,7 +71,7 @@ function getAllComps()
 {
     global $conexion;
 
-    $query = ""; // consulta
+    $query = "SELECT * FROM COMPOSITIONS;"; // consulta
     $result = mysqli_query($conexion, $query);
 
     if (!$result) {
@@ -93,7 +93,7 @@ function getAllChampions()
 {
     global $conexion;
 
-    $query = "SELECT * FROM champions"; // consulta
+    $query = "SELECT * FROM CHAMPIONS;"; // consulta
     $result = mysqli_query($conexion, $query);
 
     if (!$result) {
@@ -112,7 +112,7 @@ function getAllItems()
 {
     global $conexion;
 
-    $query = "SELECT * FROM items"; // consulta
+    $query = "SELECT * FROM ITEMS;"; // consulta
     $result = mysqli_query($conexion, $query);
 
     if (!$result) {

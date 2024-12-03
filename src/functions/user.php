@@ -11,45 +11,50 @@ function loginUser($email, $password)
 {
     global $conexion;
 
-    // validacion de las entradas
+    // validacion
     if (empty($email) || empty($password)) {
         return "El correo y la contraseña son obligatorios.";
     }
 
-    // "sanitizar email"
+    // sanitizar
     $email = filter_var($email, FILTER_SANITIZE_EMAIL);
     if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
         return "El formato del correo no es válido.";
     }
 
-    $query = ""; // consulta
-    // prepara la consulta
+    //sql
+    $query = "SELECT idUser, username, email, password, userType 
+              FROM USERS 
+              WHERE email = ? AND userType = 'admin'";
     $stmt = mysqli_prepare($conexion, $query);
 
     if (!$stmt) {
         return "Error en la preparación de la consulta: " . mysqli_error($conexion);
     }
 
-    // esto permite evitar sql inyection,  el parametro "s" es para indicar cadena de texto
-    // sql inyection: SELECT * FROM usuarios WHERE email = '' OR 1=1 --; -> se mostraran todos los usuarios porque siempre se cumplira OR 1=1
-    // haciendo esto se trata a lo enviado por el usuario como datos literales y no como algo ejecutable
+    // enlazar paraemtros
     mysqli_stmt_bind_param($stmt, "s", $email);
-    // ejecuta la consulta
     mysqli_stmt_execute($stmt);
 
-    // obtiene al consulta
+    // resultado
     $result = mysqli_stmt_get_result($stmt);
 
     if (!$result) {
         return "Error al ejecutar la consulta: " . mysqli_error($conexion);
     }
 
-    // se tendra la consulta como un arreglo asociativo (llave-valor)
+    // validacion
     if ($row = mysqli_fetch_assoc($result)) {
         // verificar contraseña
         if (password_verify($password, $row['password'])) {
             session_start();
-            $_SESSION['user_id'] = $row['id'];
+            if (isset($_SESSION['user_id'])) {
+                return "Ya hay una sesión activa.";
+            }
+            $_SESSION['user_id'] = $row['idUser'];
+            $_SESSION['username'] = $row['username'];
+            $_SESSION['email'] = $row['email'];
+            $_SESSION['userType'] = $row['userType'];
             return true;
         } else {
             return "La contraseña es incorrecta.";
@@ -60,8 +65,9 @@ function loginUser($email, $password)
 }
 
 /**
+ * Cierra la sesión del usuario.
  * 
- * @return string retornara una cadena de texto dependiendo si se cerro sesión o si no habia una sesión iniciada
+ * @return string Retorna un mensaje dependiendo del estado de la sesión.
  */
 function logoutUser()
 {
