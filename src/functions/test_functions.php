@@ -23,12 +23,14 @@ if (is_array($compositions)) {
 }
 echo "<br><br>";
 
-
 $champions = getAllChampions();
 if (is_array($champions)) {
     echo "Campeones obtenidos: <br>";
     foreach ($champions as $champion) {
-        echo "Campeón: " . $champion['name'] . "<br>";
+        echo "Campeón: " . $champion['imagePath'] . "<br>";
+        echo "Costo: " . $champion['cost'] . "<br>";
+        echo "Habilidad: " . $champion['ability'] . "<br>";
+        echo "<img src='{$champion["imagePath"]}'>";
     }
 } else {
     echo $champions;
