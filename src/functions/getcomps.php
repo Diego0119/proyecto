@@ -1,8 +1,4 @@
 <?php
-// Configuración para que el contenido que se envíe sea JSON
-header('Content-Type: application/json');
-
-// Incluir el archivo donde está la conexión a la base de datos
 include('database.php');
 
 // Verificar si se proporcionó el parámetro 'name' en la URL
