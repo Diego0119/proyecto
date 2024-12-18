@@ -1,26 +1,26 @@
 <?php
 session_start();
+include_once '../src/functions/user.php'; // Incluir funciones de usuario
 
-//credenciales del administrador
-define('ADMIN_USERNAME', 'admin');
-define('ADMIN_PASSWORD', 'password123');
-
-//verificar si el formulario fue enviado
+// Verificar si el formulario fue enviado
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $username = $_POST['username'];
-    $password = $_POST['password'];
+    $username = trim($_POST['username']); // Elimina espacios en blanco
+    $password = trim($_POST['password']); // Elimina espacios en blanco
 
-    //validar credenciales
-    if ($username === ADMIN_USERNAME && $password === ADMIN_PASSWORD) {
+    // Validar credenciales usando loginUser
+    $login_result = loginUser($username, $password);
+
+    if ($login_result === true) {
         $_SESSION['admin_logged_in'] = true;
-        header('Location: admin.php'); //redirigir al panel de administracion
+        $_SESSION['username'] = $username; // Guarda el nombre de usuario en la sesión
+        header('Location: admin.php'); // Redirigir al panel de administración
         exit();
     } else {
-        $error_message = "Usuario o contraseña incorrectos.";
+        $error_message = $login_result; // Mostrar mensaje de error
     }
 }
 
-//manejar cierre de sesion
+// Manejar cierre de sesión
 if (isset($_GET['logout'])) {
     session_destroy();
     header('Location: login.php');
