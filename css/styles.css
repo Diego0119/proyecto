@@ -27,3 +27,19 @@ a:hover {
     color: #BC6FF1;
     text-decoration: underline;
 }
+
+.img-small {
+    width: 50px;
+    height: 50px;
+    object-fit: cover;
+}
+
+.flex.flex-wrap img {
+    width: 32px; /* Tamaño fijo */
+    height: 32px; /* Tamaño fijo */
+    object-fit: cover; /* Ajusta la imagen al contenedor */
+    border-radius: 4px; /* Esquinas redondeadas, opcional */
+    display: block; /* Evita problemas de alineación */
+    margin: 0 auto; /* Centra la imagen */
+    background-color: #222; /* Fondo para imágenes cargadas incorrectamente */
+}
