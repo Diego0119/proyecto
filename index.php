@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="styles.css">
 </head>
 <body class="bg-black text-white font-sans flex flex-col min-h-screen">
-    <?php include 'pages/header.php'; ?>
+    <?php include 'header.php'; ?>
 
     <main class="flex-1 container mx-auto flex mt-4 mb-16">
         <!--publicidad izquierda-->
@@ -28,8 +28,8 @@
             <!--botones-->
             <div class="flex justify-center space-x-4 mb-6">
                 <a href="pages/builds.php" class="bg-purple-700 hover:bg-purple-600 text-white font-bold py-2 px-4 rounded">BUILDS</a>
-                <a href="pages/campeones.php" class="bg-purple-700 hover:bg-purple-600 text-white font-bold py-2 px-4 rounded">CAMPEONES</a>
-                <a href="pages/database.php" class="bg-purple-700 hover:bg-purple-600 text-white font-bold py-2 px-4 rounded">DATABASE</a>
+                <a href="pages/personajes.php" class="bg-purple-700 hover:bg-purple-600 text-white font-bold py-2 px-4 rounded">CAMPEONES</a>
+                <a href="pages/databases.php" class="bg-purple-700 hover:bg-purple-600 text-white font-bold py-2 px-4 rounded">DATABASE</a>
             </div>
 
             <!--introduccion y video-->
@@ -56,6 +56,6 @@
         </aside>
     </main>
 
-    <?php include 'pages/footer.php'; ?>
+    <?php include 'footer.php'; ?>
 </body>
 </html>
