@@ -1,3 +1,6 @@
+<?php 
+define('BASE_URL', '/tft-project/'); // cambiar esto
+?>
 <footer class="bg-purple-900 text-white">
   <div class="mx-auto max-w-screen-xl px-4 pb-8 pt-16 sm:px-6 lg:px-8">
     <div class="mx-auto max-w-md">
@@ -42,7 +45,7 @@
         <p class="text-purple-200 text-sm">Este sitio no está afiliado, patrocinado ni respaldado por Riot Games. TFT y League of Legends son marcas registradas de Riot Games, Inc.</p>
         <div class="flex justify-center lg:justify-start mt-4">
           <a href="https://www.riotgames.com/" target="_blank" rel="noopener noreferrer">
-            <img src="../img/logo-riot.webp" alt="Riot Games Logo" class="w-20 mt-2">
+            <img src="<?php echo BASE_URL; ?>img/logo-riot.webp" alt="Riot Games Logo" class="w-20 mt-2">
           </a>
         </div>
       </div>
