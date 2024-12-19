@@ -1,6 +1,9 @@
-<?php 
-define('BASE_URL', '/tft-project/'); // cambiar esto
+<?php
+if (!defined('BASE_URL')) {
+    define('BASE_URL', '/tft-project/'); // cambiar esto
+}
 ?>
+
 <footer class="bg-purple-900 text-white">
   <div class="mx-auto max-w-screen-xl px-4 pb-8 pt-16 sm:px-6 lg:px-8">
     <div class="mx-auto max-w-md">
