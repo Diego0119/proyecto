@@ -31,7 +31,7 @@ define('BASE_URL', '/tft-project/'); // cambiar esto
                 <a href="<?php echo BASE_URL; ?>pages/personajes.php" class="text-purple-200 hover:text-purple-100 font-medium px-4 py-2">CAMPEONES</a>
             </li>
             <li>
-                <a href="<?php echo BASE_URL; ?>pages/database.php" class="text-purple-200 hover:text-purple-100 font-medium px-4 py-2">DATABASE</a>
+                <a href="<?php echo BASE_URL; ?>pages/databases.php" class="text-purple-200 hover:text-purple-100 font-medium px-4 py-2">DATABASE</a>
             </li>
         </ul>
     </nav>
