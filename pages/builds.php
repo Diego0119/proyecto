@@ -1,28 +1,34 @@
 <?php
-// Incluir las funciones del backend desde la carpeta src
-$comps_path = realpath(dirname(__FILE__) . '/../src/functions/comps.php');
-if (!file_exists($comps_path)) {
-    die('El archivo comps.php no existe en la ruta especificada: ' . $comps_path);
-}
-include_once $comps_path;
+// Ruta al archivo getcomps.php
+$api_url = 'http://localhost/tft-project-main/src/functions/getcomps.php';
 
-// Lógica de paginación
+// Logica de busqueda
+$busqueda = isset($_GET['busqueda']) ? trim($_GET['busqueda']) : '';
+
+// Obtener todas las builds desde getcomps.php
+if (!empty($busqueda)) {
+    $api_url .= '?name=' . urlencode($busqueda);
+}
+
+$response = file_get_contents($api_url);
+$builds = json_decode($response, true);
+
+// Manejar errores de la API
+if (isset($builds['error'])) {
+    $mensaje = $builds['error'];
+    $builds = [];
+} elseif (!is_array($builds)) {
+    $mensaje = "Error al obtener las builds. Verifica la conexión con el servidor.";
+    $builds = [];
+}
+
+// Logica de paginacion
 $builds_por_pagina = 5;
 $pagina_actual = isset($_GET['pagina']) ? (int)$_GET['pagina'] : 1;
+$total_builds = count($builds);
+$total_paginas = ceil($total_builds / $builds_por_pagina);
 $offset = ($pagina_actual - 1) * $builds_por_pagina;
-
-// Obtener las builds utilizando la función del backend
-$builds = getAllComps();
-
-// Verificar si hay builds
-if (empty($builds)) {
-    $mensaje = "No hay builds disponibles en este momento.";
-} else {
-    // Dividir las builds para la paginación
-    $total_builds = count($builds);
-    $total_paginas = ceil($total_builds / $builds_por_pagina);
-    $builds_paginadas = array_slice($builds, $offset, $builds_por_pagina);
-}
+$builds_paginadas = array_slice($builds, $offset, $builds_por_pagina);
 ?>
 
 <!DOCTYPE html>
@@ -49,62 +55,90 @@ if (empty($builds)) {
     <main class="flex-1 container mx-auto px-4 mt-8">
         <h1 class="text-4xl font-bold text-center text-purple-300 mb-8">BUILDS META TFT TIER LIST</h1>
 
+        <!-- Buscador -->
+        <form method="GET" action="builds.php" class="mb-8">
+            <div class="flex justify-center">
+                <input 
+                    type="text" 
+                    name="busqueda" 
+                    value="<?= htmlspecialchars($busqueda); ?>" 
+                    placeholder="Buscar por nombre..." 
+                    class="w-full md:w-1/2 bg-gray-800 text-white p-2 rounded-l-lg"
+                >
+                <button 
+                    type="submit" 
+                    class="bg-purple-600 hover:bg-purple-500 text-white px-4 py-2 rounded-r-lg">
+                    Buscar
+                </button>
+            </div>
+        </form>
+
         <!-- Mensaje si no hay builds -->
-        <?php if (isset($mensaje)): ?>
+        <?php if (!empty($mensaje)): ?>
             <div class="text-center text-purple-300"><?= htmlspecialchars($mensaje); ?></div>
         <?php else: ?>
             <!-- Mostrar las builds -->
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 <?php foreach ($builds_paginadas as $build): ?>
                     <div class="bg-purple-800 p-4 rounded-lg shadow-lg">
-                        <h2 class="text-xl font-bold text-center text-purple-300 mt-4"><?= htmlspecialchars($build['name']); ?></h2>
+                        <h2 class="text-xl font-bold text-center text-purple-300 mt-4"><?= htmlspecialchars($build['compositionName']); ?></h2>
                         <p class="text-center text-purple-200">Dificultad: <?= htmlspecialchars($build['difficulty']); ?> | Rating: <?= htmlspecialchars($build['rating']); ?></p>
 
-                        <!-- Campeones y sus ítems -->
+                        <!-- Campeones y sus items -->
                         <div class="mt-4">
                             <h3 class="text-lg font-semibold text-purple-300 text-center">Campeones</h3>
-                            <?php if (!empty($build['champions']) && is_array($build['champions'])): ?>
-                                <div class="flex flex-wrap justify-center">
-                                    <?php foreach ($build['champions'] as $index => $champion): ?>
-                                        <div class="m-2 text-center">
-                                            <img src="../img/<?= htmlspecialchars($champion); ?>.webp" alt="<?= htmlspecialchars($champion); ?>" class="w-16 h-16 mx-auto rounded-full hover:opacity-80" title="<?= ucfirst($champion); ?>">
-                                            <p class="text-sm font-bold mt-2"><?= htmlspecialchars($champion); ?></p>
-                                            <ul class="mt-2">
-                                                <?php if (!empty($build['items'][$index]) && is_array($build['items'][$index])): ?>
-                                                    <?php foreach ($build['items'][$index] as $item): ?>
-                                                        <li class="text-xs text-purple-200"><?= htmlspecialchars($item); ?></li>
-                                                    <?php endforeach; ?>
-                                                <?php else: ?>
-                                                    <li class="text-xs text-gray-400">Sin ítems</li>
-                                                <?php endif; ?>
-                                            </ul>
-                                        </div>
-                                    <?php endforeach; ?>
-                                </div>
-                            <?php else: ?>
-                                <p class="text-center text-gray-400">No hay campeones asignados.</p>
-                            <?php endif; ?>
+                            <div class="flex flex-wrap justify-center">
+                                <?php 
+                                $champions = !empty($build['champions']) ? explode(',', $build['champions']) : [];
+                                $items = !empty($build['items']) ? explode(',', $build['items']) : [];
+                                foreach ($champions as $index => $champion): ?>
+                                    <div class="m-2 text-center">
+                                        <!-- Imagen del campeon -->
+                                        <img 
+                                            src="<?= htmlspecialchars($build['imagePath'][$champion] ?? 'default_champion_image.webp'); ?>" 
+                                            alt="<?= htmlspecialchars($champion); ?>" 
+                                            class="w-16 h-16 mx-auto rounded-full hover:opacity-80" 
+                                            title="<?= htmlspecialchars($champion); ?>">
+                                        <p class="text-sm font-bold mt-2"><?= htmlspecialchars($champion); ?></p>
+                                        <ul class="mt-2">
+                                            <!-- items asociados al campeon -->
+                                            <?php foreach ($items as $item): ?>
+                                                <li class="text-xs text-purple-200 flex items-center">
+                                                    <img 
+                                                        src="<?= htmlspecialchars($build['itemPaths'][$item] ?? 'default_item_image.webp'); ?>" 
+                                                        alt="<?= htmlspecialchars($item); ?>" 
+                                                        class="w-6 h-6 mr-2">
+                                                    <?= htmlspecialchars($item); ?>
+                                                </li>
+                                            <?php endforeach; ?>
+                                        </ul>
+                                    </div>
+                                <?php endforeach; ?>
+                                <?php if (empty($champions)): ?>
+                                    <p class="text-center text-gray-400">No hay campeones asignados.</p>
+                                <?php endif; ?>
+                            </div>
                         </div>
 
-                        <!-- Botón para copiar -->
+                        <!-- Boton para copiar -->
                         <div class="flex justify-center mt-4">
-                            <button onclick="copiarBuild('<?= htmlspecialchars($build['name']); ?>')" class="bg-purple-600 hover:bg-purple-500 text-white px-4 py-2 rounded-md">Copiar Build</button>
+                            <button onclick="copiarBuild('<?= htmlspecialchars($build['compositionName']); ?>')" class="bg-purple-600 hover:bg-purple-500 text-white px-4 py-2 rounded-md">Copiar Build</button>
                         </div>
                     </div>
                 <?php endforeach; ?>
             </div>
 
-            <!-- Paginación -->
+            <!-- Paginacion -->
             <div class="flex justify-center mt-8">
                 <nav class="pagination">
                     <?php if ($pagina_actual > 1): ?>
-                        <a href="builds.php?pagina=<?= $pagina_actual - 1; ?>" class="px-4 py-2 text-white">Anterior</a>
+                        <a href="builds.php?pagina=<?= $pagina_actual - 1; ?>&busqueda=<?= urlencode($busqueda); ?>" class="px-4 py-2 text-white">Anterior</a>
                     <?php endif; ?>
                     <?php for ($i = 1; $i <= $total_paginas; $i++): ?>
-                        <a href="builds.php?pagina=<?= $i; ?>" class="px-4 py-2 <?= $i == $pagina_actual ? 'bg-purple-700' : 'bg-purple-600'; ?> text-white"><?= $i; ?></a>
+                        <a href="builds.php?pagina=<?= $i; ?>&busqueda=<?= urlencode($busqueda); ?>" class="px-4 py-2 <?= $i == $pagina_actual ? 'bg-purple-700' : 'bg-purple-600'; ?> text-white"><?= $i; ?></a>
                     <?php endfor; ?>
                     <?php if ($pagina_actual < $total_paginas): ?>
-                        <a href="builds.php?pagina=<?= $pagina_actual + 1; ?>" class="px-4 py-2 text-white">Siguiente</a>
+                        <a href="builds.php?pagina=<?= $pagina_actual + 1; ?>&busqueda=<?= urlencode($busqueda); ?>" class="px-4 py-2 text-white">Siguiente</a>
                     <?php endif; ?>
                 </nav>
             </div>

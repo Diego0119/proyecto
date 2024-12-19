@@ -8,6 +8,11 @@ if (!isset($_SESSION['admin_logged_in'])) {
     exit();
 }
 
+// Verificar que las funciones necesarias existan
+if (!function_exists('getAllChampions') || !function_exists('getAllItems') || !function_exists('createComps')) {
+    die('Error: Las funciones necesarias no están definidas en comps.php.');
+}
+
 // Inicializar variables para evitar errores
 $message = "";
 $builds = [];
@@ -16,8 +21,8 @@ $items = [];
 
 // Obtener listas de campeones e ítems desde el backend
 try {
-    $champions = getAllChampions();
-    $items = getAllItems();
+    $champions = getAllChampions(); // Verifica que esta función retorne correctamente los datos
+    $items = getAllItems();        // Verifica que esta función retorne correctamente los datos
 } catch (Exception $e) {
     $message = "Error al cargar los datos: " . $e->getMessage();
 }
@@ -34,8 +39,8 @@ function saveBuildsToJson($builds)
             'tier' => $build['tier'] ?? 'N/A', // Asignar tier si está disponible
             'difficulty' => $build['difficulty'] ?? 0,
             'rating' => $build['rating'] ?? 0,
-            'champions' => json_decode($build['champions'] ?? '[]', true),
-            'items' => json_decode($build['items'] ?? '[]', true),
+            'champions' => $build['champions'] ?? [],
+            'items' => $build['items'] ?? [],
         ];
     }
 
@@ -55,8 +60,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
         $tier = $_POST['tier'];
         $difficulty = $_POST['difficulty'];
         $rating = $_POST['rating'];
-        $champions_selected = $_POST['champions'];
-        $items_selected = $_POST['items'];
+        $champions_selected = $_POST['champions'] ?? [];
+        $items_selected = $_POST['items'] ?? [];
 
         // Validar que cada campeón tenga máximo 3 ítems
         foreach ($items_selected as $champion => $itemArray) {
